@@ -336,17 +336,22 @@ document.addEventListener('DOMContentLoaded', () => {
         "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
     ];
 
-    // Текущая выбранная дата (по умолчанию 17 декабря 1985)
-    let selectedYear = 1985;
-    let selectedMonth = 12; // 1 - 12
-    let selectedDay = 17;
+    // Новая дефолтная дата: 11 августа 1999
+    let selectedYear = 1999;
+    let selectedMonth = 8;
+    let selectedDay = 11;
+
+    // Временные переменные для прокрутки в барабане
+    let tempYear = selectedYear;
+    let tempMonth = selectedMonth;
+    let tempDay = selectedDay;
 
     const dateDisplay = document.getElementById('dateDisplay');
     const numTilesGrid = document.getElementById('numTilesGrid');
     const bodyDetailModal = document.getElementById('bodyDetailModal');
     const closeBodyModal = document.getElementById('closeBodyModal');
 
-    // Функция обновления/отрисовки карточек
+    // Функция обновления карточек в реальном времени
     function updateTiles(y, m, d) {
         const res = YogaNumCalculator.calculateAll(y, m, d);
         
@@ -363,13 +368,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Обновляем текст в кнопке/строке даты
         if (dateDisplay) {
             dateDisplay.innerText = `${d} ${monthsRuGenitive[m - 1]} ${y}`;
         }
     }
 
-    // Первоначальная генерация сетки 3x4 при запуске страницы
+    // Первоначальная генерация сетки 3x4
     function initGrid() {
         if (!numTilesGrid) return;
         numTilesGrid.innerHTML = '';
@@ -390,7 +394,6 @@ document.addEventListener('DOMContentLoaded', () => {
             numTilesGrid.insertAdjacentHTML('beforeend', tileHtml);
         });
 
-        // Привязываем клик к модальному окну
         document.querySelectorAll('.num-tile').forEach(tile => {
             tile.addEventListener('click', function() {
                 const num = parseInt(this.getAttribute('data-num'), 10);
@@ -421,11 +424,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (idx > 0) resultText += "\n-----------------------\n\n";
                     resultText += `${schema.title}\n\n`;
                     resultText += `СУТЬ: ${schema.essence}\n\n`;
-                    resultText += `КАРМИЧЕСКИЙ ИСХОД: ${schema.karmic}\n\n`;
-                    resultText += `ДХАРМИЧЕСКИЙ ИСХОД: ${schema.dharmic}`;
+                    resultText += `КАРМИЧЕСКИЙ ИСХОД: ${schema.dharmic}`;
                 }
             });
-
             return resultText;
         }
 
@@ -459,49 +460,99 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${data.soul}\n\nВ позиции «${positionTitles[posKey] || ''}» энергия этого числа раскрывается через гармонию внутренних качеств, помогая вам принимать верные решения и выстраивать успешное взаимодействие с окружающим миром.`;
     }
 
-    // 4. Настройка барабана даты через MobileSelect (iOS-style Wheel)
-    function initWheelDatePicker() {
-        // Генерация массивов дней (1-31), месяцев и годов (1940-2030)
-        const days = Array.from({length: 31}, (_, i) => ({ id: i + 1, value: (i + 1).toString() }));
-        const months = monthsRuNominative.map((m, idx) => ({ id: idx + 1, value: m }));
-        const years = Array.from({length: 91}, (_, i) => ({ id: 1940 + i, value: (1940 + i).toString() }));
+    // 4. Реализация кастомного iOS-барабана (без внешних библиотек)
+    function initCustomWheel() {
+        const wheelModal = document.getElementById('wheelModal');
+        const openBtn = document.getElementById('openWheelBtn');
+        const cancelBtn = document.getElementById('wheelCancelBtn');
+        const ensureBtn = document.getElementById('wheelEnsureBtn');
 
-        new MobileSelect({
-            trigger: '#datePickerTrigger',
-            title: 'День рождения',
-            wheels: [
-                { data: days },
-                { data: months },
-                { data: years }
-            ],
-            position: [16, 11, 45], // Позиция по умолчанию: 17, Декабрь (11-й индекс), 1985 (45-й индекс от 1940)
-            ensureBtnText: 'Готово',
-            cancelBtnText: 'Отмена',
-            // САМОЕ ГЛАВНОЕ: Динамическое изменение при прокрутке барабана как на видео!
-            onChange: function(data) {
-                if (data && data.length === 3) {
-                    selectedDay = parseInt(data[0].id, 10);
-                    selectedMonth = parseInt(data[1].id, 10);
-                    selectedYear = parseInt(data[2].id, 10);
-                    updateTiles(selectedYear, selectedMonth, selectedDay);
-                }
-            },
-            onTransitionEnd: function(data) {
-                if (data && data.length === 3) {
-                    selectedDay = parseInt(data[0].id, 10);
-                    selectedMonth = parseInt(data[1].id, 10);
-                    selectedYear = parseInt(data[2].id, 10);
-                    updateTiles(selectedYear, selectedMonth, selectedDay);
-                }
+        const daysCol = document.getElementById('wheelDays');
+        const monthsCol = document.getElementById('wheelMonths');
+        const yearsCol = document.getElementById('wheelYears');
+
+        // Генерируем элементы барабанов
+        for (let i = 1; i <= 31; i++) {
+            daysCol.insertAdjacentHTML('beforeend', `<div class="wheel-item" data-val="${i}">${i}</div>`);
+        }
+        monthsRuNominative.forEach((m, idx) => {
+            monthsCol.insertAdjacentHTML('beforeend', `<div class="wheel-item" data-val="${idx + 1}">${m}</div>`);
+        });
+        for (let i = 1940; i <= 2030; i++) {
+            yearsCol.insertAdjacentHTML('beforeend', `<div class="wheel-item" data-val="${i}">${i}</div>`);
+        }
+
+        const itemHeight = 44;
+
+        function updateColumnSelection(col, callback) {
+            const scrollTop = col.scrollTop;
+            const idx = Math.round(scrollTop / itemHeight);
+            const items = col.querySelectorAll('.wheel-item');
+            items.forEach((item, index) => {
+                item.classList.toggle('selected', index === idx);
+            });
+            if (items[idx] && callback) {
+                callback(parseInt(items[idx].getAttribute('data-val'), 10));
+            }
+        }
+
+        // Привязка прокрутки с мгновенным перерасчетом плиток
+        daysCol.addEventListener('scroll', () => {
+            updateColumnSelection(daysCol, (val) => { tempDay = val; updateTiles(tempYear, tempMonth, tempDay); });
+        });
+        monthsCol.addEventListener('scroll', () => {
+            updateColumnSelection(monthsCol, (val) => { tempMonth = val; updateTiles(tempYear, tempMonth, tempDay); });
+        });
+        yearsCol.addEventListener('scroll', () => {
+            updateColumnSelection(yearsCol, (val) => { tempYear = val; updateTiles(tempYear, tempMonth, tempDay); });
+        });
+
+        // Открыть барабан
+        openBtn.addEventListener('click', () => {
+            tempYear = selectedYear;
+            tempMonth = selectedMonth;
+            tempDay = selectedDay;
+
+            wheelModal.classList.add('active');
+
+            // Прокручиваем к выбранным позициям
+            setTimeout(() => {
+                daysCol.scrollTop = (tempDay - 1) * itemHeight;
+                monthsCol.scrollTop = (tempMonth - 1) * itemHeight;
+                yearsCol.scrollTop = (tempYear - 1940) * itemHeight;
+                updateColumnSelection(daysCol);
+                updateColumnSelection(monthsCol);
+                updateColumnSelection(yearsCol);
+            }, 50);
+        });
+
+        // Отмена
+        cancelBtn.addEventListener('click', () => {
+            wheelModal.classList.remove('active');
+            updateTiles(selectedYear, selectedMonth, selectedDay);
+        });
+
+        // Готово
+        ensureBtn.addEventListener('click', () => {
+            selectedYear = tempYear;
+            selectedMonth = tempMonth;
+            selectedDay = tempDay;
+            wheelModal.classList.remove('active');
+            updateTiles(selectedYear, selectedMonth, selectedDay);
+        });
+
+        wheelModal.addEventListener('click', (e) => {
+            if (e.target === wheelModal) {
+                wheelModal.classList.remove('active');
+                updateTiles(selectedYear, selectedMonth, selectedDay);
             }
         });
     }
 
     // 5. Запуск
     initGrid();
-    initWheelDatePicker();
+    initCustomWheel();
 
-    // Закрытие модального окна
     if (closeBodyModal) {
         closeBodyModal.addEventListener('click', () => {
             bodyDetailModal.classList.remove('active');

@@ -24,28 +24,41 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Montserrat:wght@400;500;600;700;800&display=swap">
     </noscript>
 
-    <!-- 4. Библиотека MobileSelect (для iOS-подобного барабана дат) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-select@1.1.4/dist/mobile-select.css">
-    <script src="https://cdn.jsdelivr.net/npm/mobile-select@1.1.4/dist/mobile-select.iife.min.js"></script>
-
-    <!-- 5. Подключаем наши стили -->
-    <link rel="stylesheet" href="numerology.css?v=4">
+    <!-- 4. Подключаем стили с новым параметром версии для сброса кеша -->
+    <link rel="stylesheet" href="numerology.css?v=10">
 </head>
 <body>
 
     <div class="num-app-container">
         <!-- Верхняя карточка ввода: только День рождения -->
         <div class="num-input-group">
-            <div class="num-field" id="datePickerTrigger">
+            <div class="num-field" id="openWheelBtn">
                 <label>День рождения:</label>
-                <div class="date-display" id="dateDisplay">17 декабря 1985</div>
+                <div class="date-display" id="dateDisplay">11 августа 1999</div>
             </div>
         </div>
 
-        <!-- Сетка 3x4 ярких плиток (отображается сразу) -->
+        <!-- Сетка 3x4 ярких плиток -->
         <div id="numerologyResult">
             <div class="num-grid-3x4" id="numTilesGrid">
                 <!-- Плитки генерируются через JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Собственный iOS-подобный барабан выбора даты (работает везде) -->
+    <div id="wheelModal" class="num-modal">
+        <div class="wheel-modal-content">
+            <div class="wheel-header">
+                <button type="button" class="wheel-btn cancel-btn" id="wheelCancelBtn">Отмена</button>
+                <span class="wheel-title">День рождения</span>
+                <button type="button" class="wheel-btn ensure-btn" id="wheelEnsureBtn">Готово</button>
+            </div>
+            <div class="wheel-container">
+                <div class="wheel-highlight"></div>
+                <div class="wheel-column" id="wheelDays"></div>
+                <div class="wheel-column" id="wheelMonths"></div>
+                <div class="wheel-column" id="wheelYears"></div>
             </div>
         </div>
     </div>
@@ -66,8 +79,8 @@
         </div>
     </div>
 
-    <!-- Основной скрипт приложения -->
-    <script src="numerology.js?v=4"></script>
+    <!-- Основной скрипт с новым параметром версии -->
+    <script src="numerology.js?v=10"></script>
 
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
