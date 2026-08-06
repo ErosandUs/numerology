@@ -1,0 +1,349 @@
+/* ==========================================
+   ОСНОВНЫЕ СТИЛИ И СБРОС
+   ========================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background: linear-gradient(135deg, #f6f0fa 0%, #e8dcf5 100%);
+    color: #4a3b52;
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh;
+    padding: 15px;
+    user-select: none;
+}
+
+.num-app-container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* ==========================================
+   ПОЛЕ ВВОДА ДАТЫ (БЕЗ ИМЕНИ И ФАМИЛИИ)
+   ========================================== */
+.num-input-group {
+    background: #ffffff;
+    padding: 14px 20px;
+    border-radius: 18px;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 20px rgba(156, 122, 187, 0.1);
+    border: 1px solid #e8dcf5;
+}
+
+.num-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+.num-field label {
+    font-size: 1rem;
+    color: #4a3b52;
+    font-weight: 600;
+}
+
+.date-display {
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: #9c7abb;
+    background: #f4ecf9;
+    padding: 8px 14px;
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.num-field:active .date-display {
+    transform: scale(0.97);
+    background: #e8dcf5;
+}
+
+/* ==========================================
+   СЕТКА 3x4 И КАРТОЧКИ НУМЕРОЛОГИИ
+   ========================================== */
+.num-grid-3x4 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.num-tile {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    transition: transform 0.15s ease, background-color 0.3s ease;
+    overflow: hidden;
+}
+
+.num-tile:active {
+    transform: scale(0.94);
+}
+
+.num-tile-title {
+    position: relative;
+    z-index: 3;
+    align-self: flex-start;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    line-height: 1.1;
+}
+
+.num-tile-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: 78%;
+    height: 78%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+}
+
+.num-tile-number {
+    position: relative;
+    z-index: 3;
+    align-self: flex-end;
+    font-size: 1.7rem;
+    font-weight: 800;
+    line-height: 1;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    transition: all 0.2s ease;
+}
+
+/* ==========================================
+   ЦВЕТОВАЯ ПАЛИТРА ПОДЛОЖЕК ПО ЦИФРАМ (0 - 11)
+   ========================================== */
+.bg-num-0  { background-color: #8f949b; }
+.bg-num-1  { background-color: #e53935; }
+.bg-num-2  { background-color: #fb8c00; }
+.bg-num-3  { background-color: #ffb300; }
+.bg-num-4  { background-color: #00c853; }
+.bg-num-5  { background-color: #00b0ff; }
+.bg-num-6  { background-color: #1e88e5; }
+.bg-num-7  { background-color: #7c4dff; }
+.bg-num-8  { background-color: #aa00ff; }
+.bg-num-9  { background-color: #ff80ab; }
+.bg-num-10 { background-color: #ff5252; }
+.bg-num-11 { background-color: #d8d8d8; color: #31223b !important; }
+
+.bg-num-11 .num-tile-title,
+.bg-num-11 .num-tile-number {
+    color: #31223b !important;
+    text-shadow: none !important;
+}
+
+/* ==========================================
+   КАСТОМНЫЙ iOS-БАРАБАН ДЛЯ ВЫБОРА ДАТЫ
+   ========================================== */
+.num-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; 
+    width: 100%; height: 100%;
+    background: rgba(49, 34, 59, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.num-modal.active { 
+    display: flex; 
+}
+
+#bodyDetailModal {
+    align-items: center;
+    padding: 20px;
+}
+
+.wheel-modal-content {
+    background: #ffffff;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
+    animation: slideUp 0.25s ease;
+    overflow: hidden;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.wheel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid #f0e6f7;
+}
+
+.wheel-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #4a3b52;
+}
+
+.wheel-btn {
+    background: none;
+    border: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.cancel-btn {
+    color: #8a7a94;
+    font-weight: 500;
+}
+
+.ensure-btn {
+    color: #9c7abb;
+    font-weight: 700;
+}
+
+/* Контейнер 3-х барабанов */
+.wheel-container {
+    position: relative;
+    height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.wheel-highlight {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 44px;
+    transform: translateY(-50%);
+    border-top: 1px solid #e8dcf5;
+    border-bottom: 1px solid #e8dcf5;
+    background: #faf6fe;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.wheel-column {
+    flex: 1;
+    height: 100%;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    z-index: 2;
+    padding: 88px 0; /* Чтобы первый и последний элемент вставали по центру (220/2 - 44/2) */
+    text-align: center;
+}
+
+.wheel-column::-webkit-scrollbar {
+    display: none;
+}
+
+.wheel-item {
+    height: 44px;
+    line-height: 44px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #8a7a94;
+    scroll-snap-align: center;
+    transition: color 0.15s, transform 0.15s;
+    cursor: pointer;
+}
+
+.wheel-item.selected {
+    color: #31223b;
+    font-weight: 700;
+    transform: scale(1.08);
+}
+
+/* ==========================================
+   МОДАЛЬНОЕ ОКНО ОПИСАНИЙ
+   ========================================== */
+.num-modal-content {
+    background: #ffffff;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 20px;
+    padding: 25px 20px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: modalIn 0.25s ease;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.num-modal-close {
+    position: absolute;
+    top: 15px; 
+    right: 20px;
+    font-size: 28px;
+    color: #8a7a94;
+    cursor: pointer;
+}
+
+#modalBodyTitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    color: #9c7abb;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.num-archetype-badge {
+    display: block;
+    background: #f0e6f7;
+    color: #31223b;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    line-height: 1.3;
+}
+
+.num-modal-body p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #4a3b52;
+    margin-bottom: 15px;
+    white-space: pre-line;
+}
+
+.num-modal-meta {
+    border-top: 1px dashed #d3bce6;
+    padding-top: 12px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #6b5b73;
+}
+
+.num-modal-meta p {
+    margin-bottom: 4px;
+}
